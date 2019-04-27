@@ -1,0 +1,32 @@
+### SETUP
+
+## times
+Var[0] = time(8, 20)  # t_morning
+Var[1] = time(19, 50) # t_night
+
+## Flags
+# f_day
+Var[2]
+
+## Schedulers
+# Var[3] = period(300, 2 /*Drain*/, 300, 3 /* Flood */)
+# Var[4] = period(600, 2 /*Drain*/, 300, 3 /* Flood */)
+
+## Events
+# 1 - sensor events
+# 2 - Drain
+# 3 - Flood.
+# Sensors
+# Drain periods
+#
+
+### LOOP
+
+when(e_day).p_day.activate(true).p_night.activate(false);
+when(e_night).p_day.activate(false).p_night.activate(true);
+
+when(e_flood).c_flood.activate(true)
+when(e_drain).c_flood.activate(false)
+
+when(e_pump_on).pump.activate(true)
+when(e_pump_off).pump.activate(false)
