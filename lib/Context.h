@@ -8,18 +8,28 @@
 #include "Board.h"
 #include "hydro_types.h"
 #include "Value.h"
+#include "Scheduler.h"
 
 #define CONTEXT_MAX_VARS 20
 #define CONTEXT_MAX_EVENTS 4
 
+const event_id_t NOT_EVENT = 0xff;
+
+class Scheduler;
 class Context {
-    Board _board;
-    event_id_t _events[CONTEXT_MAX_EVENTS];
-    Value * _vars[CONTEXT_MAX_VARS];
+    Board mBoard;
+    Scheduler * mScheduler;
+public:
+    const Scheduler &getScheduler() const;
+
+private:
+    event_id_t mEvents[CONTEXT_MAX_EVENTS];
+    Value * mVars[CONTEXT_MAX_VARS];
 protected:
     void clearEvents();
 public:
-    Context(const Board &board);
+    Context(const Board &aBoard, const Scheduler &aScheduler);
+    Context(const Board &aBoard);
 
     /**
      * Check if the event currently is active.
@@ -37,14 +47,13 @@ public:
      */
     bool setEvent(event_id_t aEventId);
 
-
     bool setValue(var_id_t aValueRef, Value *aValue) {
-        delete _vars[aValueRef];
-        _vars[aValueRef] = aValue;
+        delete mVars[aValueRef];
+        mVars[aValueRef] = aValue;
         return true;
     }
 
-    Value * getValue(var_id_t aValueRef);
+    Value * getValue(var_id_t aValueRef) const;
 
 /*
     bool setVar(int aVarId, Value *aValue);

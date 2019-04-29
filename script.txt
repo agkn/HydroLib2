@@ -9,13 +9,13 @@ Var[1] = time(19, 50) # t_night
 Var[2]
 
 ## Schedulers
-# Var[3] = period(300, 2 /*Drain*/, 300, 3 /* Flood */)
-# Var[4] = period(600, 2 /*Drain*/, 300, 3 /* Flood */)
+# Var[3] = periodic(300, 2 /*Drain*/, 300, 3 /* Flood */)
+# Var[4] = periodic(600, 2 /*Drain*/, 300, 3 /* Flood */)
 
 ## Events
 # 1 - sensor events
-# 2 - Drain
-# 3 - Flood.
+# 2 - e_drain
+# 3 - e_flood.
 # Sensors
 # Drain periods
 #

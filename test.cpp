@@ -5,34 +5,40 @@
 #include <iostream>
 #include "lib/Script.h"
 #include "lib/Operation.h"
+#include "lib/Scheduler.h"
+#include "lib/Clock.h"
 
 
 Board board;
+Scheduler scheduler;
+
 Context context(board);
+Script s_init(context);
+Script s_main(context);
+Clock clock;
 
+void sleep(time_t aSeconds) {
+    std::cout << "Sleep: " << aSeconds << std::endl;
+};
 
-void testBinScriptSource() {
-    Board board;
-    Context context(board);
+void setup() {
+}
 
-    Script ss(context);
-
-    // time_day = time(8, 20)
-    ss.addVarId(0).addInt8(20).addInt8(8).addOp(Operation::OP_Time).addOp(Operation::OP_SetObj).end();
-
-    // time_night = time(19, 50)
-    ss.addVarId(1).addInt8(50).addInt8(19).addOp(Operation::OP_Time).addOp(Operation::OP_SetObj).end();
-
-    // f_day = period(time_day, time_night)
-    ss.addVarId(2).addVarId(1).addVarId(0).addOp(Operation::OP_Period).addOp(Operation::OP_SetObj).end();
-
-    // f_day = when(
-//    ss.print();
-
+bool loop() {
+    DateTime time(18, 04, 29, 0, 25, 0);
+    scheduler.setupEvents(context, time);
+    s_main.execute();
+    sleep(scheduler.getSleepTimeSec(time));
+    return true;
 }
 
 int main() {
-    std::cout << "Test" << std::endl;
-    testBinScriptSource();
+    setup();
+    s_init.execute();
+
+    int safe = 10; // limit the number of the cycle.
+    while (loop() && safe--) {
+        std::cout << "Loop: next iteration" << std::endl;
+    }
 }
 

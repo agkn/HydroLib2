@@ -7,6 +7,8 @@
 #include "../lib/Script.h"
 #include "../lib/BinQueue.h"
 #include "../lib/Operation.h"
+#include "../lib/HydroObject.h"
+#include "../lib/ObjPeriodic.h"
 
 
 TEST_CASE("BinQueue basics", "[BinQueue]") {
@@ -126,4 +128,15 @@ TEST_CASE("Script event", "[Script]") {
         script.execute();
         REQUIRE(context.getValue(1)->getInt() == 10);
     }
+}
+
+TEST_CASE("Period object", "[Objects]") {
+    Board board;
+    Context context(board);
+
+    ObjPeriodic periodic(context, 0, 600, 1, 300, 2);
+    DateTime time(18, 04, 29, 0, 36, 00);
+    periodic.start();
+    periodic.getEvent(0ul);
+    //REQUIRE(periodic.start() == 0);
 }
