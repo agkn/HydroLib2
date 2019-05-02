@@ -1,10 +1,13 @@
 #include <iostream>
 
 #include "lib/Board.h"
-#include "lib/Operation.h"
+#include "lib/ObjPeriodic.h"
+#include "lib/Script.h"
 
 int main() {
-    op_id_t  ff = Operation::OP_And;
-    std::cout << "Hello! " << (int)ff << "," << (int)Operation::OP_Set << std::endl;
+    Board board;
+    Context context(board);
+    ObjPeriodic test(context, 1, 2, 3, 4, 5);
+    std::cout << "Hello! " << std::endl;
     return 0;
 }

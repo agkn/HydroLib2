@@ -7,33 +7,34 @@
 
 #include "HydroObject.h"
 
-class ObjPeriodic: public  HydroObject {
+class ObjPeriodic: public HydroObject {
     class MyTask: public Task {
-        time_t mNext;
+        time_t mNext{};
         ObjPeriodic &mOwner;
     public:
         explicit MyTask(ObjPeriodic &aObjPeriodic): mOwner(aObjPeriodic) {};
-        time_t getSleepTimeSec(const DateTime &aTime) override;
-        event_id_t getEvent(const DateTime &aTime) override;
+        time_t getSleepTimeSec() override;
+        event_id_t getEvent() override;
     };
 
     event_id_t mFirstEvent;
     time_t mFirstRange;
     event_id_t mSecondEvent;
     time_t mPeriod;
-    time_t mTimeShift;
+    int mTimeShift;
 
 public:
     ObjPeriodic(Context &aContext, int aShift, time_t aFirstRange, event_id_t aFirstEvent, time_t aSecondRange, event_id_t aSecondEvent);
 
     void start() override {
+
     }
 
     void stop() override {
     }
 
-    time_t getNextTime(time_t aNow);
-    event_id_t getEvent(time_t aNow);
+    time_t getNextTime();
+    event_id_t getEvent();
 };
 
 #endif //HYDROLIB2_OBJPERIODIC_H

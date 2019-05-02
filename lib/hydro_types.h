@@ -22,7 +22,7 @@ typedef uint8_t event_id_t;
 typedef uint8_t var_id_t;
 
 #ifndef __have_typedef_time_t
-typedef uint32_t time_t;
+//typedef uint32_t time_t;
 #endif
 
 #endif //HYDROLIB2_HYDRO_TYPES_H

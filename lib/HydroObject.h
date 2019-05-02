@@ -7,13 +7,12 @@
 
 #include "hydro_types.h"
 #include "Context.h"
-#include "Scheduler.h"
 
 class HydroObject {
 protected:
     Context &mContext;
 public:
-    HydroObject(Context &aContext): mContext(aContext) {};
+    explicit HydroObject(Context &aContext): mContext(aContext) {};
 
     virtual void start() {};
     virtual void stop() {};

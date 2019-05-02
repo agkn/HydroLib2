@@ -133,10 +133,76 @@ TEST_CASE("Script event", "[Script]") {
 TEST_CASE("Period object", "[Objects]") {
     Board board;
     Context context(board);
+    const int shift = -100;
+    const time_t P1 = 600;
+    const time_t P2 = 300;
 
-    ObjPeriodic periodic(context, 0, 600, 1, 300, 2);
-    DateTime time(18, 04, 29, 0, 36, 00);
+    ObjPeriodic periodic(context, shift, P1, 1, P2, 2);
+    DateTime time(18, 04, 29, 0, 0, 00);
     periodic.start();
-    periodic.getEvent(0ul);
-    //REQUIRE(periodic.start() == 0);
+    periodic.getEvent();
 }
+
+TEST_CASE("DateTime to seconds", "[DateTime]") {
+    SECTION("Leap 1 of Mach - 1") {
+        DateTime time(20, 02, 29, 23, 59, 59);
+        // Sunday, March 1, 2020 12:00:00 AM
+        REQUIRE(time.getUtc() == 1583020799);
+    }
+    SECTION("Simple") {
+        DateTime time(19, 05, 1, 20, 04, 54);
+        // Wednesday, May 1, 2019 8:04:54 PM 1556741094
+        REQUIRE(time.getUtc() == 1556741094);
+    }
+    SECTION("Leap 1 of Mach") {
+        DateTime time(20, 03, 1, 0, 00, 0);
+        // Sunday, March 1, 2020 12:00:00 AM
+        REQUIRE(time.getUtc() == 1583020800);
+    }
+}
+
+TEST_CASE("Seconds to DateTime", "[DateTime]") {
+    SECTION("Leap 1 of Jan") {
+        DateTime time(20, 01, 1, 12, 0, 0);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+    SECTION("Leap + 1, 1 of Jan") {
+        DateTime time(21, 01, 1, 12, 0, 0);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+    SECTION("Leap - 1, 1 of Jan") {
+        DateTime time(19, 01, 1, 12, 0, 0);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+    SECTION("Leap 1 of Mach") {
+        DateTime time(20, 03, 1, 0, 0, 0);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+    SECTION("Leap + 1, 1 of Jan") {
+        DateTime time(21, 03, 1, 12, 0, 0);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+    SECTION("Leap - 1, 1 of Jan") {
+        DateTime time(19, 03, 1, 12, 0, 0);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+    SECTION("Simple") {
+        DateTime time(19, 05, 1, 20, 04, 54);
+        auto utc = time.getUtc();
+        DateTime test(utc);
+        REQUIRE(test.getUtc() == utc);
+    }
+}
+

@@ -28,7 +28,7 @@ time_t Scheduler::getSleepTimeSec(const DateTime &aTime) {
     time_t sleep = MAX_SLEEP_TIME;
     for (auto &task : mTasks) {
         if (task) {
-            time_t s = task->getSleepTimeSec(aTime);
+            time_t s = task->getSleepTimeSec();
             if (s < sleep) {
                 sleep = s;
             }
@@ -40,7 +40,7 @@ time_t Scheduler::getSleepTimeSec(const DateTime &aTime) {
 void Scheduler::setupEvents(Context &aContext, const DateTime &aTime) {
     for (auto &mTask : mTasks) {
         if (mTask) {
-            event_id_t event = mTask->getEvent(aTime);
+            event_id_t event = mTask->getEvent();
             if (NOT_EVENT != event) {
                 aContext.setEvent(event);
             }

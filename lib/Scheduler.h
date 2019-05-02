@@ -12,8 +12,8 @@
 
 struct Task {
     /** Return sleep time until this task should be activated. */
-    virtual time_t getSleepTimeSec(const DateTime &aTime) = 0;
-    virtual event_id_t getEvent(const DateTime &aTime) = 0;
+    virtual time_t getSleepTimeSec() = 0;
+    virtual event_id_t getEvent() = 0;
 };
 
 const int MAX_TASKS = 10;
