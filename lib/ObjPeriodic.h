@@ -22,19 +22,19 @@ class ObjPeriodic: public HydroObject {
     event_id_t mSecondEvent;
     time_t mPeriod;
     int mTimeShift;
+    time_t mStartTicks;
 
 public:
     ObjPeriodic(Context &aContext, int aShift, time_t aFirstRange, event_id_t aFirstEvent, time_t aSecondRange, event_id_t aSecondEvent);
 
-    void start() override {
-
-    }
+    void start() override;
 
     void stop() override {
     }
 
-    time_t getNextTime();
-    event_id_t getEvent();
+    time_t getNextTime(time_t aNow);
+    event_id_t getEvent(time_t aNow);
+
 };
 
 #endif //HYDROLIB2_OBJPERIODIC_H

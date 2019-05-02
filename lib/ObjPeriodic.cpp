@@ -5,42 +5,31 @@
 #include "ObjPeriodic.h"
 
 time_t ObjPeriodic::MyTask::getSleepTimeSec() {
-/*
-    return mNext <= aTime.daySeconds() ? 0 : mNext - aTime.daySeconds();
-*/
-    return 0;
+    time_t now = Clock::now().getUtc();
+    return mNext <= now ? 0 : mNext - now;
 }
 
 event_id_t ObjPeriodic::MyTask::getEvent() {
-/*
-    time_t time = aTime.daySeconds();
-    if (mNext < time) {
-        mNext = mOwner.getNextTime(time);
-        return mOwner.getEvent(aTime.daySeconds());
+    time_t now = Clock::now().getUtc();
+    if (mNext < now) {
+        mNext = mOwner.getNextTime(now);
+        return mOwner.getEvent(now);
     }
-*/
     return NOT_EVENT;
 }
 
-time_t ObjPeriodic::getNextTime() {
-/*
-    aSecondsOfDay += DateTime::SEC_IN_DAY + mTimeShift; // correct time on shift
-    time_t alligned = (aSecondsOfDay / mPeriod) * mPeriod;
-    time_t res = (aSecondsOfDay < alligned + mFirstRange)
-            ? alligned + mFirstRange - mTimeShift
-            : alligned + mPeriod - mTimeShift;
-    return res % DateTime::SEC_IN_DAY;
-*/
-    return DateTime::SEC_IN_DAY;
+time_t ObjPeriodic::getNextTime(time_t aNow) {
+    time_t relative = aNow - mStartTicks + mTimeShift;
+    time_t alligned = (relative / mPeriod) * mPeriod;
+    return (relative < alligned + mFirstRange)
+           ? mStartTicks + alligned + mFirstRange - mTimeShift
+           : mStartTicks + alligned + mPeriod - mTimeShift;
 }
 
-event_id_t ObjPeriodic::getEvent() {
-/*
-    aNow += mTimeShift; // correct time on shift
-    time_t inTime = aNow % mPeriod;
+event_id_t ObjPeriodic::getEvent(time_t aNow) {
+    time_t relative = aNow - mStartTicks + mTimeShift;
+    time_t inTime = relative % mPeriod;
     return (inTime < mFirstRange) ? mFirstEvent : mSecondEvent;
-*/
-    return 0;
 }
 
 ObjPeriodic::ObjPeriodic(Context &aContext, int aShift, time_t aFirstRange, event_id_t aFirstEvent, time_t aSecondRange,
@@ -50,5 +39,12 @@ ObjPeriodic::ObjPeriodic(Context &aContext, int aShift, time_t aFirstRange, even
     mFirstRange = aFirstRange;
     mSecondEvent = aSecondEvent;
     mPeriod = aSecondRange + aFirstRange;
-    mTimeShift = aShift;
+    while(aShift < 0) {
+        aShift += mPeriod;
+    }
+    mTimeShift = aShift % static_cast<int>(mPeriod);
+}
+
+void ObjPeriodic::start() {
+    mStartTicks = Clock::now().getUtc();
 }

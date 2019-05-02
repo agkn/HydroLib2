@@ -23,19 +23,18 @@ struct DateTime {
 
     DateTime(uint8_t aYear,  uint8_t aMonth, uint8_t aDay,
              uint8_t aHour, uint8_t aMinutes, uint8_t aSeconds);
-    DateTime(time_t aTicks);
-
 
     time_t daySeconds() const  {
         return mHour * 3600ul + mMinute * 60 + mSecond;
     }
     time_t getUtc() const ;
-    bool setUtc(time_t aTicks);
+    static DateTime createFromUtc(time_t aTicks);
 };
 
 class Clock {
 public:
-    static DateTime now();
+    static void setNow(DateTime aNow);
+    static const DateTime & now();
 };
 
 time_t dateTime2Seconds(const DateTime &aDateTime);
