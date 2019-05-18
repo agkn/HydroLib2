@@ -6,13 +6,14 @@
 #define HYDROLIB2_HYDROOBJECT_H
 
 #include "hydro_types.h"
-#include "Context.h"
+
+class Context;
 
 class HydroObject {
 protected:
-    Context &mContext;
+    Context *mContext;
 public:
-    explicit HydroObject(Context &aContext): mContext(aContext) {};
+    explicit HydroObject(Context &aContext): mContext(&aContext) {};
 
     virtual void start() {};
     virtual void stop() {};
@@ -20,5 +21,7 @@ public:
     virtual void setInt(var_id_t aVarId) {}
     virtual ~HydroObject() = default;
 };
+
+typedef HydroObject * obj_ptr_t;
 
 #endif //HYDROLIB2_HYDROOBJECT_H

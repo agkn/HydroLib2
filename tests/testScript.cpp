@@ -62,39 +62,39 @@ TEST_CASE("BinQueue basics", "[BinQueue]") {
 
 TEST_CASE("Script basic", "[Script]") {
     Board board;
-    Context context(board);
+    Context context(board, nullptr);
     Script script(context);
 
     // (12 + 8) / (7 - 2) * 10
-    script.addData(12);
-    script.addData(8);
+    script.addInt(12);
+    script.addInt(8);
     script.addOperation(Operation::OP_Plus);
-    script.addData(7);
-    script.addData(2);
+    script.addInt(7);
+    script.addInt(2);
     script.addOperation(Operation::OP_Minus);
     script.addOperation(Operation::OP_Div);
-    script.addData(10);
+    script.addInt(10);
     script.addOperation(Operation::OP_Mul);
     script.endStatement();
 
     for(int i = 0; i < 10; i++) {
         script.execute();
-        auto result = script.pop<int>();
+        auto result = script.popResult<int>();
         REQUIRE(result == 40);
     }
 }
 
 TEST_CASE("Script context", "[Script]") {
     Board board;
-    Context context(board);
+    Context context(board, nullptr);
     Script script(context);
 
     // Var_1 = 10 , Var1 = Var1 + 1
-    script.addData(10);
+    script.addInt(10);
     script.addSetInt(1);
 
     script.addGetInt(1);
-    script.addData(15);
+    script.addInt(15);
     script.addOperation(Operation::OP_Plus); // + 1
 
     script.addSetInt(1);
@@ -107,15 +107,15 @@ TEST_CASE("Script context", "[Script]") {
 
 TEST_CASE("Script event", "[Script]") {
     Board board;
-    Context context(board);
+    Context context(board, nullptr);
     Script script(context);
 
-    script.addData(0);
+    script.addInt(0);
     script.addSetInt(1);
     script.endStatement();
 
     script.addIfEvent(0);
-    script.addData(10);
+    script.addInt(10);
     script.addSetInt(1);
     script.endStatement();
 
@@ -195,7 +195,8 @@ TEST_CASE("Seconds to DateTime", "[DateTime]") {
 
 TEST_CASE("Period object", "[Objects]") {
     Board board;
-    Context context(board);
+    Scheduler scheduler;
+    Context context(board, &scheduler);
     const int shift = -100;
     const time_t P1 = 600;
     const time_t P2 = 300;
@@ -231,5 +232,44 @@ TEST_CASE("Period object", "[Objects]") {
         REQUIRE(periodic.getNextTime(now.getUtc()) - now.getUtc() == P2);
         REQUIRE(periodic.getEvent(now.getUtc()) == E2);
     }
-
 }
+
+TEST_CASE("Scheduler", "[Scheduler]") {
+    Board board;
+    Scheduler scheduler;
+    Context context(board, &scheduler);
+
+    const int shift = 0;
+    const time_t P1 = 600;
+    const time_t P2 = 300;
+
+    event_id_t E1 = 1;
+    event_id_t E2 = 2;
+    ObjPeriodic periodic(context, shift, P1, E1, P2, E2);
+
+    DateTime start(19, 05, 1, 00, 00, 0);
+    Clock::setNow(start);
+
+    REQUIRE(scheduler.getSleepTimeSec() == MAX_SLEEP_TIME);
+
+    periodic.start();
+    // the ObjPeriodic sets an event with related to current period.
+    scheduler.setupEvents(context);
+    REQUIRE(context.isEventActive(E1));
+    REQUIRE(!context.isEventActive(E2));
+
+    context.begin();
+    Clock::setNow(DateTime::createFromUtc(start.getUtc() + 100));
+    scheduler.setupEvents(context);
+    REQUIRE(scheduler.getSleepTimeSec() == P1 - 100);
+    REQUIRE(!context.isEventActive(E1));
+    REQUIRE(!context.isEventActive(E2));
+
+    context.begin();
+    Clock::setNow(DateTime::createFromUtc(start.getUtc() + P1));
+    scheduler.setupEvents(context);
+    REQUIRE(!context.isEventActive(E1));
+    REQUIRE(context.isEventActive(E2));
+    REQUIRE(scheduler.getSleepTimeSec() == P2);
+}
+

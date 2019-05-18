@@ -20,7 +20,7 @@ class Context {
     Board mBoard;
     Scheduler * mScheduler;
 public:
-    const Scheduler &getScheduler() const;
+    Scheduler &getScheduler();
 
 private:
     event_id_t mEvents[CONTEXT_MAX_EVENTS];
@@ -28,8 +28,7 @@ private:
 protected:
     void clearEvents();
 public:
-    Context(const Board &aBoard, const Scheduler &aScheduler);
-    Context(const Board &aBoard);
+    Context(const Board &aBoard, Scheduler *aScheduler);
 
     /**
      * Check if the event currently is active.
@@ -40,6 +39,14 @@ public:
     bool isEventActive(event_id_t aEventId);
 
     /**
+     * Returns a first active if any.
+     *
+     * @param aEventId
+     * @return  an active aevent if any or NOT_EVENT otherwise.
+     */
+    event_id_t anyEventActive();
+
+    /**
      * Flag an event.
      *
      * @param aEventId the event id to flag.
@@ -47,11 +54,7 @@ public:
      */
     bool setEvent(event_id_t aEventId);
 
-    bool setValue(var_id_t aValueRef, Value *aValue) {
-        delete mVars[aValueRef];
-        mVars[aValueRef] = aValue;
-        return true;
-    }
+    bool setValue(var_id_t aValueRef, Value *aValue);
 
     Value * getValue(var_id_t aValueRef) const;
 
@@ -64,7 +67,7 @@ public:
      * This function should be called at the begining of each  cycle to prepare the context
      * for the cycle processing.
      */
-    virtual void begin();
+    void begin();
     virtual ~Context();
 };
 

@@ -5,15 +5,9 @@
 #include <cstring>
 #include "Context.h"
 
-Context::Context(const Board &aBoard, const Scheduler &aScheduler) : mBoard(aBoard), mScheduler(NULL) {
+Context::Context(const Board &aBoard, Scheduler *aScheduler) : mBoard(aBoard), mScheduler(aScheduler) {
     for (auto &_var : mVars) {
-        _var = NULL;
-    }
-    clearEvents();
-}
-Context::Context(const Board &aBoard) : mBoard(aBoard) {
-    for (auto &_var : mVars) {
-        _var = NULL;
+        _var = nullptr;
     }
     clearEvents();
 }
@@ -32,6 +26,15 @@ bool Context::isEventActive(event_id_t aEventId) {
         }
     }
     return false;
+}
+
+event_id_t Context::anyEventActive() {
+    for (unsigned char _event : mEvents) {
+        if (NOT_EVENT != _event) {
+            return _event;
+        }
+    }
+    return NOT_EVENT;
 }
 
 bool Context::setEvent(event_id_t aEventId) {
@@ -59,11 +62,15 @@ Value *Context::getValue(var_id_t aValueRef) const {
     return mVars[aValueRef];
 }
 
-const Scheduler &Context::getScheduler() const {
+Scheduler &Context::getScheduler() {
     return *mScheduler;
 }
 
-
+bool Context::setValue(var_id_t aValueRef, Value *aValue) {
+    delete mVars[aValueRef];
+    mVars[aValueRef] = aValue;
+    return true;
+}
 
 //
 //bool Context::setVar(int aVarId, Value *aValue) {

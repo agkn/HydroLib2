@@ -17,14 +17,14 @@ bool Scheduler::addTask(Task *aTask) {
 bool Scheduler::removeTask(Task *aTask) {
     for (auto &task : mTasks) {
         if (task == aTask) {
-            task = NULL;
+            task = nullptr;
             return true;
         }
     }
     return false;
 }
 
-time_t Scheduler::getSleepTimeSec(const DateTime &aTime) {
+time_t Scheduler::getSleepTimeSec() {
     time_t sleep = MAX_SLEEP_TIME;
     for (auto &task : mTasks) {
         if (task) {
@@ -37,7 +37,7 @@ time_t Scheduler::getSleepTimeSec(const DateTime &aTime) {
     return sleep;
 }
 
-void Scheduler::setupEvents(Context &aContext, const DateTime &aTime) {
+void Scheduler::setupEvents(Context &aContext) {
     for (auto &mTask : mTasks) {
         if (mTask) {
             event_id_t event = mTask->getEvent();

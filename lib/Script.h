@@ -19,35 +19,54 @@ class Script {
     BinQueue mOpQueue;
     Context &mContext;
 public:
-    Script(Context &mContext);
+    explicit Script(Context &mContext);
 
-    Script & addData(int aData) {
-        mOpQueue.add(Operation::OP_ArgInt);
-        mOpQueue.add(aData);
-        return *this;
-    }
+    /**
+     * This value will be pushed to the stack during execution.
+     *
+     * @param aData A data to be pushed to the stack.
+     * @return
+     */
+    Script & addUint8(uint8_t aData);
 
-    Script & addOperation(op_id_t aOpId){
-        mOpQueue.add(aOpId);
-        return *this;
-    }
+    /**
+     * This value will be pushed to the stack during execution.
+     *
+     * @param aData A data to be pushed to the stack.
+     * @return
+     */
+    Script & addInt(int aData);
 
-    Script &endStatement() {
-        mOpQueue.end();
-        return *this;
-    }
+    /**
+     * This value will be pushed to the stack during execution.
+     *
+     * @param aEventId A data to be pushed to the stack.
+     * @return
+     */
+    Script & addEvent(event_id_t aEventId);
 
-    bool execute();
+    /**
+     * A var reference will be pushed to the stack during execution.
+     *
+     * @param aVarId A data to be pushed to the stack.
+     * @return
+     */
+    Script & addVarId(uint8_t aVarId);
 
-    template <typename T>
-    T pop() {
-        return mStack.pop<T>();
-    }
+    /**
+     * Add operation to be executed. All necessary arguments will be popped from the stack.
+     *
+     * @param aData A data to be pushed to the stack.
+     * @return
+     */
+    Script & addOperation(op_id_t aOpId);
 
-    void addVarId(uint8_t aVarId);
-
+    // Store and get variables from context;
     void addSetInt(var_id_t aVarRef);
     void addGetInt(var_id_t aVarRef);
+
+    Script addSetObj(var_id_t aVarRef);
+    Script addGetObj(var_id_t aVarRef);
 
     /**
      * CheckEvent checks an event specified by arg and skips the current statement if event is not present.
@@ -55,6 +74,27 @@ public:
      * @param aEventId the event to check.
      */
     void addIfEvent(event_id_t aEventId);
+
+    /**
+     * Completes the current statement.
+     *
+     * @return
+     */
+    Script &endStatement();
+
+    /**
+     * Execute the script.
+     *
+     * @return true if all statement were executes or false if some statement aborts the execution.
+     */
+    bool execute();
+
+    /**
+     * Retrieve the value stored in the stack during script execution.
+     */
+    template <typename T> T popResult() {
+        return mStack.pop<T>();
+    }
 };
 
 

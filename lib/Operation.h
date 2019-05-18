@@ -7,16 +7,15 @@
 
 #include "hydro_types.h"
 #include "OpStack.h"
-#include "ScriptSource.h"
 #include "Context.h"
 #include "BinQueue.h"
 
 // define tokens of functions.
 #define FUNC_CODES(F) \
     F(ArgInt) \
+    F(ArgInt8) \
     F(ArgFloat) \
     F(ArgBool) \
-    F(ArgEvent) \
     F(Plus) \
     F(Minus) \
     F(Mul) \
@@ -28,11 +27,12 @@
     F(SetBool) \
     F(GetBool) \
     F(SetObj) \
+    F(GetObj) \
     F(And) \
     F(Or) \
     F(IfEvent) \
-    F(Period) \
-    F(Time)
+    F(DailyEvents) \
+    F(Periodic) \
 
 class ScriptSource;
 // Extern declarations generator
@@ -55,8 +55,9 @@ public:
     constexpr static op_id_t OP_TEST = 100;
 
     // Operations result codes
-    constexpr static op_result_t OP_RESULT_OK = 0;
-    constexpr static op_result_t OP_RESULT_SKIP = 1;
+    constexpr static op_result_t RESULT_OK = 0;
+    constexpr static op_result_t RESULT_SKIP = 1;
+    constexpr static op_result_t RESULT_ERROR = 2;
 };
 
 #endif //HYDROLIB2_OPERATION_H
